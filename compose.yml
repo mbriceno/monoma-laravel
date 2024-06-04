@@ -1,0 +1,82 @@
+networks:
+    laravel:
+        name: laravel
+
+services:
+
+    nginx:
+        build:
+            context: .
+            dockerfile: nginx.dockerfile
+        depends_on:
+            - php
+            - mysql
+        container_name: nginx
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - ./src:/var/www/html
+        networks:
+            - laravel
+
+    php:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: php
+        volumes:
+            - ./src:/var/www/html
+        networks:
+            - laravel
+
+    mysql:
+        image: mysql:latest
+        container_name: mysql
+        ports:
+            - 5200:3306
+        volumes:
+            - ./mysql:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: monomadb
+            MYSQL_USER: monoma
+            MYSQL_PASSWORD: 1q2w3e4r5t
+            MYSQL_ROOT_PASSWORD: azsxdcfvgb
+        networks:
+            - laravel
+
+    composer:
+        image: composer:latest
+        container_name: composer
+        volumes:
+            - ./src:/var/www/html
+        working_dir: /var/www/html
+        networks:
+            - laravel
+
+    artisan:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: artisan
+        volumes:
+            - ./src:/var/www/html
+        working_dir: /var/www/html
+        entrypoint: ['php', 'artisan']
+        networks:
+            - laravel
+    
+    redis:
+        image: redis:latest
+        restart: always
+        ports:
+            - 6379:6379
+        command: redis-server --save 20 1 --loglevel warning
+        volumes:
+            - cache:/data
+        networks:
+            - laravel
+
+volumes:
+    cache:
+        driver: local
