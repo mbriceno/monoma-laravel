@@ -26,3 +26,17 @@ To check standar code with php-fixer run:
 ```sh
 docker compose run --rm composer phpcs
 ```
+
+Current endpoints:
+
+```sh
+  POST       api/auth
+  POST       api/logout 
+  POST       api/me 
+  POST       api/refresh
+
+  POST       api/lead 
+  GET|HEAD   api/lead/{id} 
+  GET|HEAD   api/leads 
+  GET|HEAD   api/user
+```
